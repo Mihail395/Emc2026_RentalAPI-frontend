@@ -29,6 +29,13 @@ const AccommodationAPI = {
     }): Promise<Page<Accommodation>> => {
         const response = await api.get("/api/accommodations/filter", { params });
         return response.data;
+    },
+
+    getByCondition: async (condition: string | null): Promise<Accommodation[]> => {
+        const response = await api.get("/api/accommodations/filter-by-condition", {
+            params: condition ? {condition} : {}
+        });
+        return response.data;
     }
 };
 

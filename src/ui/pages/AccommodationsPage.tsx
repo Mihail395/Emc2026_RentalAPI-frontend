@@ -5,12 +5,14 @@ import {
     CircularProgress,
     Typography,
     Alert,
-    Chip
+    Chip,
+    Button,
+    ButtonGroup
 } from "@mui/material";
 import useAccommodations from "../../hooks/useAccommodations.ts";
 
 const AccommodationsPage = () => {
-    const {accommodations, loading, error} = useAccommodations();
+    const {accommodations, loading, error, condition, setCondition} = useAccommodations();
 
     if (loading) {
         return (
@@ -29,6 +31,44 @@ const AccommodationsPage = () => {
             <Typography variant="h4" gutterBottom>
                 Accommodations
             </Typography>
+
+            {/* Filter buttons */}
+            <Box sx={{mb: 3}}>
+                <Typography variant="body1" sx={{mb: 1}}>
+                    Filter by condition:
+                </Typography>
+                <ButtonGroup variant="outlined">
+                    <Button
+                        variant={condition === null ? "contained" : "outlined"}
+                        onClick={() => setCondition(null)}
+                        // contained = active/selected style
+                        // outlined = inactive style
+                    >
+                        All
+                    </Button>
+                    <Button
+                        variant={condition === "GOOD" ? "contained" : "outlined"}
+                        color="success"
+                        onClick={() => setCondition("GOOD")}
+                    >
+                        Good
+                    </Button>
+                    <Button
+                        variant={condition === "BAD" ? "contained" : "outlined"}
+                        color="error"
+                        onClick={() => setCondition("BAD")}
+                    >
+                        Bad
+                    </Button>
+                </ButtonGroup>
+            </Box>
+
+            {/* Show message if no results */}
+            {accommodations.length === 0 && (
+                <Alert severity="info">
+                    No accommodations found for the selected condition.
+                </Alert>
+            )}
 
             {/* flexWrap wraps cards to next line when they don't fit */}
             <Box sx={{

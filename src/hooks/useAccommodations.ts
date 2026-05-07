@@ -8,12 +8,13 @@ const useAccommodations = () => {
     const [accommodations, setAccommodations] = useState<Accommodation[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
+    const [condition, setCondition] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchAccommodations = async () => {
             try {
                 setLoading(true);
-                const data = await AccommodationAPI.getAll();
+                const data = await AccommodationAPI.getByCondition(condition);
                 setAccommodations(data);
             } catch (err) {
                 setError("Failed to fetch accommodations");
@@ -23,8 +24,8 @@ const useAccommodations = () => {
         };
 
         fetchAccommodations();
-    }, []);
-    return {accommodations, loading, error};
+    }, [condition]);
+    return {accommodations, loading, error, condition, setCondition};
 };
 
 export default useAccommodations;
