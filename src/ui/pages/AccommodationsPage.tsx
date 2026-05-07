@@ -59,16 +59,19 @@ const AccommodationsPage = () => {
                                     sx={{mb: 1, mt: 1}}
                                 />
                                 <Typography variant="body2" color="text.secondary">
-                                    Host: {accommodation.hostFullName}
+                                    Host: {accommodation.host?.name} {accommodation.host?.surname}
                                 </Typography>
                                 <Typography variant="body2" color="text.secondary">
-                                    Country: {accommodation.hostCountry}
+                                    Country: {accommodation.host?.country?.name}
                                 </Typography>
                                 <Typography variant="body2" color="text.secondary">
-                                    Rooms: {accommodation.numRooms}
+                                    Total Rooms: {accommodation.numRooms}
                                 </Typography>
                                 <Typography variant="body2" color="text.secondary">
                                     Rented Rooms: {accommodation.rentedRooms}
+                                </Typography>
+                                <Typography variant="body2" color="text.secondary">
+                                    Available Rooms: {accommodation.numRooms - accommodation.rentedRooms}
                                 </Typography>
                                 <Chip
                                     label={accommodation.condition}

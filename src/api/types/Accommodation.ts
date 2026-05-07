@@ -1,14 +1,14 @@
+import type {Host} from "./Host.ts";
+
 // Mirrors AccommodationSummaryDto.java from the backend
 export interface Accommodation {
     id: number;
     name: string;
     category: string;
     condition: string;
+    host: Host;
     numRooms: number;
     rentedRooms: number;
-    availableRooms: number;
-    hostFullName: string;
-    hostCountry: string;
 }
 
 // Mirrors CreateAccommodationRequest.java
