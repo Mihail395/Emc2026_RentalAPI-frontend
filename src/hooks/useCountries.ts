@@ -1,11 +1,12 @@
 import {useState, useEffect} from "react";
-import type {Country} from "../api/types/Country.ts";
+import type {Country, CreateCountryRequest, UpdateCountryRequest} from "../api/types/Country.ts";
 import CountryAPI from "../api/countryAPI.ts";
 
 const useCountries = () => {
     const [countries, setCountries] = useState<Country[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
+    const [refresh, setRefresh] = useState<boolean>(false);
 
     useEffect(() => {
         const fetchCountries = async () => {
@@ -21,9 +22,27 @@ const useCountries = () => {
         };
 
         fetchCountries();
-    }, []);
+    }, [refresh]);
 
-    return {countries, loading, error};
+    const triggerRefresh = () => setRefresh(prev => !prev);
+
+    const createCountry = async (request: CreateCountryRequest) => {
+        await CountryAPI.create(request);
+        triggerRefresh();
+    };
+
+    const updateCountry = async (id: number, request: UpdateCountryRequest) => {
+        await CountryAPI.update(id, request);
+        triggerRefresh();
+    };
+
+    const deleteCountry = async (id: number) => {
+        await CountryAPI.delete(id);
+        triggerRefresh();
+    };
+
+    return {countries, loading, error,
+    createCountry, updateCountry, deleteCountry};
 };
 
 export default useCountries;

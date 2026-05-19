@@ -40,17 +40,20 @@ const Header = () => {
                         Show login button if not logged in */}
                     {isAuthenticated ? (
                         <Box sx={{display: "flex", alignItems: "center", gap: 1}}>
-                            <Typography variant="body2">
-                                {username}
-                            </Typography>
+                            <Typography variant="body2">{username}</Typography>
                             <Button color="inherit" onClick={handleLogout}>
                                 Logout
                             </Button>
                         </Box>
                     ) : (
-                        <Button color="inherit" component={Link} to="/login">
-                            Login
-                        </Button>
+                        <Box sx={{display: "flex", gap: 1}}>
+                            <Button color="inherit" component={Link} to="/login">
+                                Login
+                            </Button>
+                            <Button color="inherit" component={Link} to="/register">
+                                Register
+                            </Button>
+                        </Box>
                     )}
                 </Box>
             </Toolbar>

@@ -1,5 +1,5 @@
 import api from "../axios/axios.ts";
-import type {AuthResponse, LoginRequest} from "./types/Auth.ts";
+import type {AuthResponse, LoginRequest, RegisterRequest} from "./types/Auth.ts";
 
 const AuthAPI = {
 
@@ -10,7 +10,7 @@ const AuthAPI = {
     },
 
     // POST /api/auth/register
-    register: async (request: LoginRequest): Promise<AuthResponse> => {
+    register: async (request: RegisterRequest): Promise<AuthResponse> => {
         const response = await api.post("/api/auth/register", request);
         return response.data;
     }

@@ -11,10 +11,17 @@ export interface Accommodation {
     rentedRooms: number;
 }
 
-// Mirrors CreateAccommodationRequest.java
 export interface CreateAccommodationRequest {
     name: string;
     category: string;
+    hostId: number;
+    numRooms: number;
+}
+
+export interface UpdateAccommodationRequest {
+    name: string;
+    category: string;
+    condition: string;
     hostId: number;
     numRooms: number;
 }

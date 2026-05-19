@@ -1,18 +1,60 @@
+import {useState} from "react";
 import {
-    Box,
-    Card,
-    CardContent,
-    CircularProgress,
-    Typography,
     Alert,
-    Chip,
+    Box,
     Button,
-    ButtonGroup
+    ButtonGroup,
+    Card,
+    CardActions,
+    CardContent,
+    Chip,
+    CircularProgress,
+    Typography
 } from "@mui/material";
 import useAccommodations from "../../hooks/useAccommodations.ts";
+import useHosts from "../../hooks/useHosts.ts";
+import useAuth from "../../hooks/useAuth.ts";
+import AccommodationDialog from "../components/AccommodationDialog.tsx";
+import type {Accommodation, CreateAccommodationRequest, UpdateAccommodationRequest} from "../../api/types/Accommodation.ts";
 
 const AccommodationsPage = () => {
-    const {accommodations, loading, error, condition, setCondition} = useAccommodations();
+    const {accommodations, loading, error, condition, setCondition, createAccommodation, updateAccommodation, deleteAccommodation} = useAccommodations();
+    const {hosts} = useHosts();
+
+    const {isAdmin} = useAuth();
+
+    const [dialogOpen, setDialogOpen] = useState(false);
+    const [selectedAccommodation, setSelectedAccommodation] = useState<Accommodation | null>(null);
+
+
+    const handleOpenCreate = () => {
+        setSelectedAccommodation(null);
+        setDialogOpen(true);
+    };
+
+    const handleOpenEdit = (accommodation: Accommodation) => {
+        setSelectedAccommodation(accommodation);
+        setDialogOpen(true);
+    };
+
+    const handleClose = () => {
+        setDialogOpen(false);
+        setSelectedAccommodation(null);
+    };
+
+    const handleSubmit = async (data: CreateAccommodationRequest | UpdateAccommodationRequest) => {
+        if (selectedAccommodation) {
+            await updateAccommodation(selectedAccommodation.id, data as UpdateAccommodationRequest);
+        } else {
+            await createAccommodation(data as CreateAccommodationRequest);
+        }
+    };
+
+    const handleDelete = async (id: number) => {
+        if (window.confirm("Are you sure you want to delete this accommodation?")) {
+            await deleteAccommodation(id);
+        }
+    };
 
     if (loading) {
         return (
@@ -28,9 +70,18 @@ const AccommodationsPage = () => {
 
     return (
         <Box>
-            <Typography variant="h4" gutterBottom>
-                Accommodations
-            </Typography>
+            <Box sx={{display: "flex", justifyContent: "space-between", alignItems: "center", mb: 3}}>
+                <Typography variant="h4">
+                    Accommodations
+                </Typography>
+
+                {/* Only show Add button if user is ADMIN */}
+                {isAdmin && (
+                    <Button variant="contained" onClick={handleOpenCreate}>
+                        Add Accommodation
+                    </Button>
+                )}
+            </Box>
 
             {/* Filter buttons */}
             <Box sx={{mb: 3}}>
@@ -41,8 +92,6 @@ const AccommodationsPage = () => {
                     <Button
                         variant={condition === null ? "contained" : "outlined"}
                         onClick={() => setCondition(null)}
-                        // contained = active/selected style
-                        // outlined = inactive style
                     >
                         All
                     </Button>
@@ -63,32 +112,24 @@ const AccommodationsPage = () => {
                 </ButtonGroup>
             </Box>
 
-            {/* Show message if no results */}
             {accommodations.length === 0 && (
-                <Alert severity="info">
-                    No accommodations found for the selected condition.
-                </Alert>
+                <Alert severity="info">No accommodations found.</Alert>
             )}
 
-            {/* flexWrap wraps cards to next line when they don't fit */}
-            <Box sx={{
-                display: "flex",
-                flexWrap: "wrap",
-                gap: 3
-            }}>
+            <Box sx={{display: "flex", flexWrap: "wrap", gap: 3}}>
                 {accommodations.map((accommodation) => (
                     <Box
                         key={accommodation.id}
                         sx={{
                             width: {
-                                xs: "100%",      // full width on mobile
-                                sm: "calc(50% - 12px)",   // 2 columns on tablet
-                                md: "calc(33.33% - 16px)" // 3 columns on desktop
+                                xs: "100%",
+                                sm: "calc(50% - 12px)",
+                                md: "calc(33.33% - 16px)"
                             }
                         }}
                     >
-                        <Card sx={{height: "100%"}}>
-                            <CardContent>
+                        <Card sx={{height: "100%", display: "flex", flexDirection: "column"}}>
+                            <CardContent sx={{flexGrow: 1}}>
                                 <Typography variant="h6">
                                     {accommodation.name}
                                 </Typography>
@@ -120,10 +161,36 @@ const AccommodationsPage = () => {
                                     sx={{mt: 1}}
                                 />
                             </CardContent>
+
+                            {isAdmin && (
+                                <CardActions>
+                                    <Button
+                                        size="small"
+                                        onClick={() => handleOpenEdit(accommodation)}
+                                    >
+                                        Edit
+                                    </Button>
+                                    <Button
+                                        size="small"
+                                        color="error"
+                                        onClick={() => handleDelete(accommodation.id)}
+                                    >
+                                        Delete
+                                    </Button>
+                                </CardActions>
+                            )}
                         </Card>
                     </Box>
                 ))}
             </Box>
+
+            <AccommodationDialog
+                open={dialogOpen}
+                onClose={handleClose}
+                onSubmit={handleSubmit}
+                accommodation={selectedAccommodation}
+                hosts={hosts}
+            />
         </Box>
     );
 };
