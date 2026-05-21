@@ -1,11 +1,13 @@
-import {AppBar, Toolbar, Typography, Button, Box} from "@mui/material";
+import {AppBar, Toolbar, Typography, Button, Box, IconButton, Badge} from "@mui/material";
 import {Link, useNavigate} from "react-router-dom";
 import useAuth from "../../hooks/useAuth.ts";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import useWishlistContext from "../../hooks/useWishlistContext.ts";
 
 const Header = () => {
     const {isAuthenticated, username, logout} = useAuth();
-    // useNavigate lets us redirect programmatically
     const navigate = useNavigate();
+    const {wishlist} = useWishlistContext();
 
     const handleLogout = () => {
         logout();
@@ -13,16 +15,13 @@ const Header = () => {
     };
 
     return (
-        // AppBar is MUI's top navigation bar component
         <AppBar position="static">
             <Toolbar>
-                {/* App title on the left */}
                 <Typography variant="h6" sx={{flexGrow: 1}}>
                     Rental API
                 </Typography>
 
-                {/* Navigation links */}
-                <Box sx={{display: "flex", gap: 2}}>
+                <Box sx={{display: "flex", gap: 2, alignItems: "center"}}>
                     <Button color="inherit" component={Link} to="/">
                         Home
                     </Button>
@@ -36,8 +35,21 @@ const Header = () => {
                         Countries
                     </Button>
 
-                    {/* Show username and logout if logged in
-                        Show login button if not logged in */}
+                    {isAuthenticated && (
+                        <IconButton
+                            color="inherit"
+                            component={Link}
+                            to="/wishlist"
+                        >
+                            <Badge
+                                badgeContent={wishlist.length}
+                                color="error"
+                            >
+                                <FavoriteIcon/>
+                            </Badge>
+                        </IconButton>
+                    )}
+
                     {isAuthenticated ? (
                         <Box sx={{display: "flex", alignItems: "center", gap: 1}}>
                             <Typography variant="body2">{username}</Typography>

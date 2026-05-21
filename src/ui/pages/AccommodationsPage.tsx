@@ -9,23 +9,30 @@ import {
     CardContent,
     Chip,
     CircularProgress,
-    Typography
+    IconButton,
+    Typography,
 } from "@mui/material";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import useAccommodations from "../../hooks/useAccommodations.ts";
 import useHosts from "../../hooks/useHosts.ts";
 import useAuth from "../../hooks/useAuth.ts";
+import useWishlistContext from "../../hooks/useWishlistContext.ts";
 import AccommodationDialog from "../components/AccommodationDialog.tsx";
-import type {Accommodation, CreateAccommodationRequest, UpdateAccommodationRequest} from "../../api/types/Accommodation.ts";
+import type {
+    Accommodation,
+    CreateAccommodationRequest,
+    UpdateAccommodationRequest
+} from "../../api/types/Accommodation.ts";
 
 const AccommodationsPage = () => {
     const {accommodations, loading, error, condition, setCondition, createAccommodation, updateAccommodation, deleteAccommodation} = useAccommodations();
     const {hosts} = useHosts();
-
     const {isAdmin} = useAuth();
+    const {addToWishlist, removeFromWishlist, isInWishlist} = useWishlistContext();
 
     const [dialogOpen, setDialogOpen] = useState(false);
     const [selectedAccommodation, setSelectedAccommodation] = useState<Accommodation | null>(null);
-
 
     const handleOpenCreate = () => {
         setSelectedAccommodation(null);
@@ -56,6 +63,14 @@ const AccommodationsPage = () => {
         }
     };
 
+    const handleWishlistToggle = (accommodation: Accommodation) => {
+        if (isInWishlist(accommodation.id)) {
+            removeFromWishlist(accommodation.id);
+        } else {
+            addToWishlist(accommodation);
+        }
+    };
+
     if (loading) {
         return (
             <Box sx={{display: "flex", justifyContent: "center", mt: 4}}>
@@ -75,7 +90,6 @@ const AccommodationsPage = () => {
                     Accommodations
                 </Typography>
 
-                {/* Only show Add button if user is ADMIN */}
                 {isAdmin && (
                     <Button variant="contained" onClick={handleOpenCreate}>
                         Add Accommodation
@@ -83,7 +97,6 @@ const AccommodationsPage = () => {
                 )}
             </Box>
 
-            {/* Filter buttons */}
             <Box sx={{mb: 3}}>
                 <Typography variant="body1" sx={{mb: 1}}>
                     Filter by condition:
@@ -162,23 +175,38 @@ const AccommodationsPage = () => {
                                 />
                             </CardContent>
 
-                            {isAdmin && (
-                                <CardActions>
-                                    <Button
-                                        size="small"
-                                        onClick={() => handleOpenEdit(accommodation)}
-                                    >
-                                        Edit
-                                    </Button>
-                                    <Button
-                                        size="small"
-                                        color="error"
-                                        onClick={() => handleDelete(accommodation.id)}
-                                    >
-                                        Delete
-                                    </Button>
-                                </CardActions>
-                            )}
+                            <CardActions sx={{justifyContent: "space-between"}}>
+
+                                <IconButton
+                                    onClick={() => handleWishlistToggle(accommodation)}
+                                    color={isInWishlist(accommodation.id) ? "error" : "default"}
+
+                                >
+                                    {isInWishlist(accommodation.id)
+                                        ? <FavoriteIcon/>
+                                        : <FavoriteBorderIcon/>
+                                    }
+                                </IconButton>
+
+                                {/* Admin only buttons */}
+                                {isAdmin && (
+                                    <Box>
+                                        <Button
+                                            size="small"
+                                            onClick={() => handleOpenEdit(accommodation)}
+                                        >
+                                            Edit
+                                        </Button>
+                                        <Button
+                                            size="small"
+                                            color="error"
+                                            onClick={() => handleDelete(accommodation.id)}
+                                        >
+                                            Delete
+                                        </Button>
+                                    </Box>
+                                )}
+                            </CardActions>
                         </Card>
                     </Box>
                 ))}

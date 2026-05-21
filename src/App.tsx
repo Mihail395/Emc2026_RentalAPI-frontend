@@ -7,6 +7,7 @@ import CountriesPage from "./ui/pages/CountriesPage.tsx";
 import LoginPage from "./ui/pages/LoginPage.tsx";
 import RegisterPage from "./ui/pages/RegisterPage.tsx";
 import ProtectedRoute from "./ui/components/ProtectedRoute.tsx";
+import WishlistPage from "./ui/pages/WishlistPage.tsx";
 
 const App = () => {
     return (
@@ -24,6 +25,7 @@ const App = () => {
                         <Route path="/accommodations" element={<AccommodationsPage/>}/>
                         <Route path="/hosts" element={<HostsPage/>}/>
                         <Route path="/countries" element={<CountriesPage/>}/>
+                        <Route path="/wishlist" element={<WishlistPage/>}/>
                     </Route>
 
                     <Route path="*" element={<Navigate to="/" replace/>}/>
